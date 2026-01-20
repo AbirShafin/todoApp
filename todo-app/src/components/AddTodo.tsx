@@ -1,32 +1,32 @@
-// src/pages/AppToDo.tsx
-import { useState, useEffect } from "react";
-import AddTodo from "../components/AddTodo";
-import TodoList from "../components/TodoList";
+// src/components/AddTodo.tsx
+import { useState } from "react";
+import type { FormEvent } from "react";
+import { useTodos } from "../hooks/useTodos";
 
-export interface Todo {
-  id: number;
-  text: string;
-  completed: boolean;
-}
+export default function AddTodo() {
+  const [input, setInput] = useState("");
+  const { addTodo } = useTodos();
 
-export default function AppToDo() {
-  const [todos, setTodos] = useState<Todo[]>([]);
-
-  // Optional: persist todos in localStorage
-  useEffect(() => {
-    const stored = localStorage.getItem("todos");
-    if (stored) setTodos(JSON.parse(stored));
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("todos", JSON.stringify(todos));
-  }, [todos]);
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    if (input.trim()) {
+      addTodo(input);
+      setInput("");
+    }
+  };
 
   return (
-    <main style={{ padding: "2rem", maxWidth: "600px", margin: "auto" }}>
-      <h1>Todo App</h1>
-      <AddTodo setTodos={setTodos} />
-      <TodoList todos={todos} setTodos={setTodos} />
-    </main>
+    <form onSubmit={handleSubmit} className="add-todo-form">
+      <input
+        type="text"
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        placeholder="Add a new todo..."
+        className="todo-input"
+      />
+      <button type="submit" className="add-button">
+        Add
+      </button>
+    </form>
   );
 }
